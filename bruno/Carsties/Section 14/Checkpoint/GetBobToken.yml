@@ -1,0 +1,52 @@
+info:
+  name: GetBobToken
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{id-carsties}}/connect/token"
+  body:
+    type: form-urlencoded
+    data:
+      - name: grant_type
+        value: password
+      - name: username
+        value: bob
+      - name: password
+        value: Pass123$
+      - name: client_id
+        value: bruno
+      - name: client_secret
+        value: NotASecret
+      - name: scope
+        value: auctionApp openid profile
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        var response = res.getBody();
+
+        bru.setVar("BobToken", response.access_token);
+    - type: tests
+      code: |-
+        const jsonData = res.getBody();
+        test("Access token was received", function () {
+          expect(jsonData).to.haveOwnProperty("access_token");
+          expect(jsonData.access_token).to.be.a("string");
+          expect(jsonData.access_token.length).to.be.greaterThan(0);
+        });
+        test("Token type is Bearer", function () {
+          expect(jsonData.token_type).to.eq("Bearer");
+        });
+        test("Access token is a valid JWT structure", function () {
+          expect(jsonData.access_token.split(".")).to.have.lengthOf(3);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

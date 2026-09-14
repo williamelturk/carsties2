@@ -1,0 +1,29 @@
+info:
+  name: Get Finished Auction details (search-svc)
+  type: http
+  seq: 13
+
+http:
+  method: GET
+  url: "{{gateway}}/search/{{createdItemId}}"
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        var jsonData = res.getBody();
+
+        test("Status code is 200", function () {
+            expect(res.getStatus()).to.equal(200);
+        });
+
+        test("Status should be Finished", function () {
+            expect(jsonData.status).to.eq('Finished');
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

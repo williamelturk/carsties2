@@ -1,0 +1,42 @@
+info:
+  name: Create new Auction no auth
+  type: http
+  seq: 5
+
+http:
+  method: POST
+  url: "{{gateway}}/auctions"
+  body:
+    type: json
+    data: |-
+      {
+        "make": "Ford",
+        "model": "{{$randomBsBuzz}}",
+        "color": "{{$randomColor}}",
+        "year": "2020",
+        "mileage": "{{$randomInt}}",
+        "imageUrl": "https://cdn.pixabay.com/photo/2016/05/05/18/03/coupe-1374448_1280.jpg",
+        "reservePrice": {{$randomInt}},
+        "description": "{{$randomLoremParagraphs}}",
+        "auctionEnd": "{{dateString}}"
+      }
+
+runtime:
+  scripts:
+    - type: before-request
+      code: |-
+        var date = new Date()
+        date.setDate(date.getDate() + 14);
+        var dateString = date.toISOString();
+        bru.setVar("dateString", dateString);
+    - type: tests
+      code: |-
+        test("Status code is 401", function () {
+            expect(res.getStatus()).to.equal(401);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

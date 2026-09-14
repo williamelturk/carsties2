@@ -1,0 +1,35 @@
+info:
+  name: Update the created auction as Bob
+  type: http
+  seq: 9
+
+http:
+  method: PUT
+  url: "{{gateway}}/auctions/{{createdItemId}}"
+  body:
+    type: json
+    data: |-
+      {
+          "make": "Ford Updated",
+          "model": "Updated",
+          "color": "red",
+          "mileage": 20000,
+          "year": 1999
+      }
+  auth:
+    type: bearer
+    token: "{{BobToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test('Status code is 403', function() {
+            expect(res.getStatus()).to.equal(403);
+        })
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

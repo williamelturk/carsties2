@@ -1,0 +1,42 @@
+info:
+  name: Create Bid As Tom for 200
+  type: http
+  seq: 6
+
+http:
+  method: POST
+  url: "{{bidSvc}}/api/bids?auctionId={{createdItemId}}&amount=200"
+  params:
+    - name: auctionId
+      value: "{{createdItemId}}"
+      type: query
+    - name: amount
+      value: "200"
+      type: query
+  auth:
+    type: bearer
+    token: "{{TomToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        var jsonData = res.getBody();
+
+        test("Status code is 200", function () {
+            expect(res.getStatus()).to.equal(200);
+        });
+
+        test("Response body contains Tom as bidder", function () {
+            expect(jsonData.bidder).to.eq('tom');
+        });
+
+        test("Bid status is Accepted", function () {
+            expect(jsonData.bidStatus).to.eq('Accepted');
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

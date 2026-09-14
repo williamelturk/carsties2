@@ -1,0 +1,39 @@
+info:
+  name: Create Bid As Alice for 100
+  type: http
+  seq: 5
+
+http:
+  method: POST
+  url: "{{gateway}}/bids?auctionId={{createdItemId}}&amount=100"
+  params:
+    - name: auctionId
+      value: "{{createdItemId}}"
+      type: query
+    - name: amount
+      value: "100"
+      type: query
+  auth:
+    type: bearer
+    token: "{{AliceToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        var jsonData = res.getBody();
+
+        test("Status code is 200", function () {
+            expect(res.getStatus()).to.equal(200);
+        });
+
+        test("Bid status is AcceptedBelowReserve", function () {
+            expect(jsonData).to.haveOwnProperty('bidStatus');
+            expect(jsonData.bidStatus).to.eq('AcceptedBelowReserve');
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

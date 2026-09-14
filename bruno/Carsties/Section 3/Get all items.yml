@@ -1,0 +1,33 @@
+info:
+  name: Get all items
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{searchApi}}/api/search"
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        var jsonData = res.getBody();
+
+        test('Status code is 200', function() {
+            expect(res.getStatus()).to.equal(200);
+        })
+
+        test('First item is Audi', function() {
+            expect(jsonData.results[0].make).to.eq('Audi');
+        })
+
+        test('Result includes results, pagecount and totalcount properties', function() {
+            expect(jsonData).to.haveOwnProperty('results');
+        })
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,62 @@
+info:
+  name: Create new Auction
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: "{{auctionApi}}/api/auctions"
+  body:
+    type: json
+    data: |-
+      {
+        "make": "Ford",
+        "model": "Escort",
+        "color": "White",
+        "year": "2021",
+        "mileage": "10000",
+        "imageUrl": "https://cdn.pixabay.com/photo/2018/02/04/15/45/car-3130111_960_720.jpg",
+        "reservePrice": 100,
+        "description": "This is a ford escort car created for the purposes of a demo",
+        "auctionEnd": "{{dateString}}"
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: before-request
+      code: |-
+        var date = new Date()
+        date.setDate(date.getDate() + 14);
+        var dateString = date.toISOString();
+        bru.setVar("dateString", dateString);
+    - type: after-response
+      code: |-
+        var jsonData = res.getBody();
+
+        bru.setVar("createdItemId", jsonData.id);
+    - type: tests
+      code: |-
+        var jsonData = res.getBody();
+
+        test("Status code is 201", function () {
+            expect(res.getStatus()).to.equal(201);
+        });
+
+        test("Response body contains expected properties", function () {
+            expect(jsonData).to.haveOwnProperty('id');
+            expect(jsonData).to.haveOwnProperty('make');
+            expect(jsonData).to.haveOwnProperty('model');
+            expect(jsonData).to.haveOwnProperty('year');
+            expect(jsonData).to.haveOwnProperty('imageUrl');
+            expect(jsonData).to.haveOwnProperty('seller');
+            expect(jsonData).to.haveOwnProperty('description');
+            expect(jsonData.status).to.eq('Live');
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true

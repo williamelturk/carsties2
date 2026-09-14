@@ -1,0 +1,7 @@
+info:
+  name: Section 14
+  type: folder
+  seq: 8
+
+request:
+  auth: inherit

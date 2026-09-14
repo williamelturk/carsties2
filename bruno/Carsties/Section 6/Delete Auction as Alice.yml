@@ -1,0 +1,25 @@
+info:
+  name: Delete Auction as Alice
+  type: http
+  seq: 10
+
+http:
+  method: DELETE
+  url: "{{gateway}}/auctions/{{createdItemId}}"
+  auth:
+    type: bearer
+    token: "{{AliceToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test('Status code is 204', function() {
+            expect(res.getStatus()).to.equal(204);
+        })
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,45 @@
+info:
+  name: Create Bid on Seeded Auction (test grpc)
+  type: http
+  seq: 14
+
+http:
+  method: POST
+  url: "{{gateway}}/bids?auctionId=ford-gt&amount={{bidAmount}}"
+  params:
+    - name: auctionId
+      value: ford-gt
+      type: query
+    - name: amount
+      value: "{{bidAmount}}"
+      type: query
+  auth:
+    type: bearer
+    token: "{{AliceToken}}"
+
+runtime:
+  scripts:
+    - type: before-request
+      code: |-
+        const axios = require('axios');
+        const result = await axios.get(`${bru.getCollectionVar('gateway')}/bids/ford-gt`);
+        const highest = result.data.reduce((max, b) => Math.max(max, b.amount), 0);
+        bru.setVar('bidAmount', highest + 100);
+    - type: tests
+      code: |-
+        var jsonData = res.getBody();
+
+        test("Status code is 200", function () {
+            expect(res.getStatus()).to.equal(200);
+        });
+
+        test("Bid status contains  accepted", function () {
+            expect(jsonData).to.haveOwnProperty('bidStatus');
+            expect(jsonData.bidStatus).to.contain('Accepted');
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

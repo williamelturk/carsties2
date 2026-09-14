@@ -1,0 +1,7 @@
+info:
+  name: Section 11
+  type: folder
+  seq: 7
+
+request:
+  auth: inherit

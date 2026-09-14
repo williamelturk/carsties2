@@ -2,6 +2,7 @@ using AuctionService.Data;
 using AuctionService.Errors;
 using Contracts;
 using Mapster;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Wolverine;
 using Wolverine.EntityFrameworkCore;
@@ -23,10 +24,20 @@ builder.Services.AddDbContextWithWolverineIntegration<AuctionDbContext>(options 
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.Authority = builder.Configuration["IdentityServerUrl"];
+        options.RequireHttpsMetadata = false;
+        options.TokenValidationParameters.ValidateAudience = false;
+        options.TokenValidationParameters.NameClaimType = "username";
+    });
+
 builder.Host.UseWolverine(opts =>
 {
     opts.PersistMessagesWithPostgresql(connString, "auctions_rmq");
     opts.UseEntityFrameworkCoreTransactions();
+    
     opts.Policies.UseDurableOutboxOnAllSendingEndpoints();
     
     opts.UseRabbitMq(rabbit =>
@@ -38,6 +49,10 @@ builder.Host.UseWolverine(opts =>
         .DeclareExchange("auction-created", ex => ex.ExchangeType = ExchangeType.Fanout)
         .DeclareExchange("auction-updated", ex => ex.ExchangeType = ExchangeType.Fanout)
         .DeclareExchange("auction-deleted", ex => ex.ExchangeType = ExchangeType.Fanout)
+        .DeclareExchange("auction-finished", ex => ex.ExchangeType = ExchangeType.Fanout)
+        .DeclareExchange("bid-placed", ex => ex.ExchangeType = ExchangeType.Fanout)
+        .BindExchange("auction-finished").ToQueue("auction-auction-finished")
+        .BindExchange("bid-placed").ToQueue("auction-bid-placed")
         .AutoProvision();
 
     opts.PublishMessage<AuctionCreated>().ToRabbitExchange("auction-created");
@@ -45,6 +60,8 @@ builder.Host.UseWolverine(opts =>
     opts.PublishMessage<AuctionDeleted>().ToRabbitExchange("auction-deleted");
 
     opts.ListenToRabbitQueue("wolverine-dead-letter-queue");
+    opts.ListenToRabbitQueue("auction-auction-finished");
+    opts.ListenToRabbitQueue("auction-bid-placed");
 });
 
 var app = builder.Build();

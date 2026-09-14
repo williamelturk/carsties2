@@ -1,0 +1,35 @@
+info:
+  name: Generate exception
+  type: http
+  seq: 8
+
+http:
+  method: PUT
+  url: "{{auctionApi}}/api/auctions/{{createdItemId}}"
+  body:
+    type: json
+    data: |-
+      {
+          "make": "foo"
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        var jsonData = res.getBody();
+
+        test('Status code is 500', function() {
+            expect(res.getStatus()).to.equal(500);
+        });
+
+        test('Details is bar', function() {
+          expect(jsonData.detail).to.eq('bar');
+        })
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

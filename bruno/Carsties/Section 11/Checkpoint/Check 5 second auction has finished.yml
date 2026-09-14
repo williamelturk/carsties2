@@ -1,0 +1,48 @@
+info:
+  name: Check 5 second auction has finished
+  type: http
+  seq: 13
+
+http:
+  method: GET
+  url: "{{gateway}}/search/{{createdItemId}}"
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: before-request
+      code: bru.setVar('pollingComplete', false);
+    - type: after-response
+      code: |-
+        const jsonData = res.getBody();
+
+        const retries = bru.getVar("retries") || 0;
+
+        console.log("retries:", retries, "status:", jsonData.status)
+
+        if (jsonData.status !== "Finished" && retries < 10) {
+          bru.setVar("retries", retries + 1);
+          bru.setNextRequest("Check 5 second auction has finished")
+        } else {
+          bru.setVar('pollingComplete', true);
+        }
+    - type: tests
+      code: |-
+        test(`Retries: ${bru.getVar("retries")}, status: ${res.getBody().status}`, function() {
+          expect(true).to.equal(true);
+        });
+
+        if (bru.getVar('pollingComplete')){
+            test("Status is Finished", function () {
+            expect(res.getBody().status).to.eq("Finished");
+          });
+          test("Winner is Tom", function () {
+            expect(res.getBody().winner).to.eq("tom");
+          });
+        }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,30 @@
+info:
+  name: Get Ferrari Spider
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: "{{auctionApi}}/api/auctions/ferrari-spider"
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        var jsonData = res.getBody();
+
+        test('Status code is 200', function() {
+            expect(res.getStatus()).to.equal(200);
+        })
+
+        test('Item is Ferrari Spider', function() {
+            expect(jsonData.make).to.eq('Ferrari');
+            expect(jsonData.model).to.eq('Spider');
+        })
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

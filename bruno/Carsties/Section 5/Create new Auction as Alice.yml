@@ -1,0 +1,60 @@
+info:
+  name: Create new Auction as Alice
+  type: http
+  seq: 6
+
+http:
+  method: POST
+  url: "{{auctionApi}}/api/auctions"
+  body:
+    type: json
+    data: |-
+      {
+        "make": "Ford",
+        "model": "{{$randomBsBuzz}}",
+        "color": "{{$randomColor}}",
+        "year": "2020",
+        "mileage": "{{$randomInt}}",
+        "imageUrl": "https://cdn.pixabay.com/photo/2016/05/05/18/03/coupe-1374448_1280.jpg",
+        "reservePrice": {{$randomInt}},
+        "description": "{{$randomLoremParagraphs}}",
+        "auctionEnd": "{{dateString}}"
+      }
+  auth:
+    type: bearer
+    token: "{{AliceToken}}"
+
+runtime:
+  scripts:
+    - type: before-request
+      code: |-
+        var date = new Date()
+        date.setDate(date.getDate() + 14);
+        var dateString = date.toISOString();
+        bru.setVar("dateString", dateString);
+    - type: after-response
+      code: |-
+        var jsonData = res.getBody();
+
+        bru.setVar("createdItemId", jsonData.id);
+    - type: tests
+      code: |-
+        var jsonData = res.getBody();
+
+        test("Status code is 201", function () {
+            expect(res.getStatus()).to.equal(201);
+        });
+
+        test("Response body contains Alice as seller", function () {
+            expect(jsonData).to.haveOwnProperty('seller');
+            expect(jsonData.seller).to.eq('alice');
+        });
+
+        bru.setVar("createdItemId", jsonData.id);
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: true

@@ -1,0 +1,34 @@
+info:
+  name: Update the created auction
+  type: http
+  seq: 4
+
+http:
+  method: PUT
+  url: "{{auctionApi}}/api/auctions/{{createdItemId}}"
+  body:
+    type: json
+    data: |-
+      {
+          "make": "Ford Updated"
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        test('Status code is 204', function() {
+            expect(res.getStatus()).to.equal(204);
+        });
+    - type: tests
+      code: |-
+        test("Status code is 204", function () {
+            expect(res.getStatus()).to.equal(204);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

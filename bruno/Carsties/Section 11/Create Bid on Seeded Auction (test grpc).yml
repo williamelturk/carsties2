@@ -1,0 +1,24 @@
+info:
+  name: Create Bid on Seeded Auction (test grpc)
+  type: http
+  seq: 14
+
+http:
+  method: POST
+  url: "{{bidSvc}}/api/bids?auctionId=ford-gt&amount=100"
+  params:
+    - name: auctionId
+      value: ford-gt
+      type: query
+    - name: amount
+      value: "100"
+      type: query
+  auth:
+    type: bearer
+    token: "{{AliceToken}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

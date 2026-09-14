@@ -1,0 +1,40 @@
+opencollection: 1.0.0
+
+info:
+  name: Carsties
+config:
+  proxy:
+    inherit: true
+    config:
+      protocol: http
+      hostname: ""
+      port: ""
+      auth:
+        username: ""
+        password: ""
+      bypassProxy: ""
+
+request:
+  variables:
+    - name: auctionApi
+      value: http://localhost:7001
+    - name: searchApi
+      value: http://localhost:7002
+    - name: bidSvc
+      value: http://localhost:7003
+    - name: identitySvc
+      value: http://localhost:5001
+    - name: gateway
+      value: http://localhost:6001
+    - name: app-carsties
+      value: https://app.carsties.test
+    - name: id-carsties
+      value: https://id.carsties.test
+    - name: api-carsties
+      value: https://api.carsties.test
+bundled: false
+extensions:
+  bruno:
+    ignore:
+      - node_modules
+      - .git

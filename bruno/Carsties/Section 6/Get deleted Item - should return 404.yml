@@ -1,0 +1,23 @@
+info:
+  name: Get deleted Item - should return 404
+  type: http
+  seq: 11
+
+http:
+  method: GET
+  url: "{{gateway}}/search/{{createdItemId}}"
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test('Status code is 404 Not found', function() {
+            expect(res.getStatus()).to.equal(404);
+        })
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

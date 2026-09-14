@@ -1,0 +1,61 @@
+info:
+  name: Poison message failure
+  type: http
+  seq: 5
+
+http:
+  method: POST
+  url: "{{auctionApi}}/api/auctions"
+  body:
+    type: json
+    data: |-
+      {
+        "make": "fail-always",
+        "model": "{{$randomProductAdjective}}",
+        "color": "{{$randomColor}}",
+        "year": "2020",
+        "mileage": "{{$randomInt}}",
+        "description": "{{$randomLoremParagraphs}}",
+        "imageUrl": "{{$randomTransportImage}}",
+        "auctionEnd": "{{dateString}}",
+        "reservePrice": "{{$randomInt}}"
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: before-request
+      code: |-
+        var date = new Date()
+        date.setDate(date.getDate() + 14);
+        var dateString = date.toISOString();
+        bru.setVar("dateString", dateString);
+    - type: after-response
+      code: |-
+        var jsonData = res.getBody();
+
+        bru.setVar("createdItemId", jsonData.id);
+    - type: tests
+      code: |-
+        var jsonData = res.getBody();
+
+        test("Status code is 201", function () {
+            expect(res.getStatus()).to.equal(201);
+        });
+
+        test("Response body contains expected properties", function () {
+            expect(jsonData).to.haveOwnProperty('id');
+            expect(jsonData).to.haveOwnProperty('make');
+            expect(jsonData).to.haveOwnProperty('model');
+            expect(jsonData).to.haveOwnProperty('year');
+            expect(jsonData).to.haveOwnProperty('imageUrl');
+            expect(jsonData).to.haveOwnProperty('seller');
+            expect(jsonData).to.haveOwnProperty('description');
+            expect(jsonData.status).to.eq('Live');
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

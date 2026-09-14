@@ -1,0 +1,30 @@
+info:
+  name: Get Updated Item by Id
+  type: http
+  seq: 11
+
+http:
+  method: GET
+  url: "{{gateway}}/search/{{createdItemId}}"
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        var jsonData = res.getBody();
+
+        test('Status code is 200', function() {
+            expect(res.getStatus()).to.equal(200);
+        })
+
+        test('Item has correct make of Ford', function() {
+            expect(jsonData.make).to.eq('Ford');
+            expect(jsonData.model).to.eq('Updated');
+        })
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

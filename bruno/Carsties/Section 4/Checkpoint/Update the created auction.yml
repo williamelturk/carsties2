@@ -1,0 +1,35 @@
+info:
+  name: Update the created auction
+  type: http
+  seq: 3
+
+http:
+  method: PUT
+  url: "{{auctionApi}}/api/auctions/{{createdItemId}}"
+  body:
+    type: json
+    data: |-
+      {
+          "model": "Updated"
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: before-request
+      code: |-
+        var updatedModel = "{{$guid}}-updated"
+        bru.setVar("updatedModel", updatedModel);
+    - type: tests
+      code: |-
+        var jsonData = res.getBody();
+
+        test('Status code is 204 No Content', function() {
+            expect(res.getStatus()).to.equal(204);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

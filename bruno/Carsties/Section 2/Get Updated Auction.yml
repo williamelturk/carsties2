@@ -1,0 +1,29 @@
+info:
+  name: Get Updated Auction
+  type: http
+  seq: 5
+
+http:
+  method: GET
+  url: "{{auctionApi}}/api/auctions/{{createdItemId}}"
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        var jsonData = res.getBody();
+
+        test('Status code is 200', function() {
+            expect(res.getStatus()).to.equal(200);
+        })
+
+        test('Make includes updated', function() {
+            expect(jsonData.make).to.include('Updated');
+        })
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,26 @@
+info:
+  name: Get bids for auction
+  type: http
+  seq: 8
+
+http:
+  method: GET
+  url: "{{gateway}}/bids/{{createdItemId}}"
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        const jsonData = res.getBody();
+
+        test("Response contains 2 bids", function () {
+          expect(jsonData).to.be.an("array");
+          expect(jsonData).to.have.lengthOf(3);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
