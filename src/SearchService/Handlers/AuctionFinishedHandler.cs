@@ -1,8 +1,6 @@
-﻿using AuctionService.Data;
 using Contracts;
 using Meilisearch;
 using SearchService.Models;
-using Spectre.Console;
 
 namespace SearchService.Handlers;
 
