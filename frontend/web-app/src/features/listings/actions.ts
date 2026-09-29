@@ -6,11 +6,14 @@ export type ListingSearchParams = {
     searchTerm?: string | string[];
     orderBy?: string | string[];
     filterBy?: string | string[];
+    seller?: string;
+    winner?: string;
 }
 
 const baseUrl = process.env.BASE_API_URL || 'http://localhost:6001';
-export async function getListings(params:ListingSearchParams={}): Promise<PagedResult<Auction>> {
-    const {pageNumber, pageSize, searchTerm, orderBy, filterBy} = params;
+
+export async function getListings(params: ListingSearchParams = {}): Promise<PagedResult<Auction>> {
+    const {pageNumber, pageSize, searchTerm, orderBy, filterBy, seller, winner} = params;
     const query = new URLSearchParams({
         pageNumber: pageNumber?.toString() || String(1),
         pageSize: pageSize?.toString() || String(8),
@@ -20,6 +23,9 @@ export async function getListings(params:ListingSearchParams={}): Promise<PagedR
     query.set("orderBy", orderBy?.toString() || "endingSoon");
     query.set("filterBy", filterBy?.toString() || "live");
 
+    if(winner) query.set("winner", winner);
+    if(seller) query.set("seller", seller);
+    
     const res = await fetch(`${baseUrl}/search?${query}`);
 
     if (!res.ok) throw new Error('Failed to fetch data')
@@ -27,9 +33,9 @@ export async function getListings(params:ListingSearchParams={}): Promise<PagedR
     return res.json();
 }
 
-export async function getListingsDetails(id:string): Promise<Auction> {
+export async function getListingsDetails(id: string): Promise<Auction> {
     const res = await fetch(`${baseUrl}/auctions/${id}`);
-    
-    if(!res.ok) throw new Error('Failed to fetch data')
+
+    if (!res.ok) throw new Error('Failed to fetch data')
     return res.json();
 }

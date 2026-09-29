@@ -3,6 +3,8 @@ import Link from "next/link";
 import CountdownTimer from "@/features/listings/CountdownTimer";
 import CardImage from "@/features/listings/CardImage";
 import {Auction} from "@/lib/types";
+import {Badge} from "@/components/ui/badge";
+import {UserIcon} from "lucide-react";
 
 type Props = {
     auction: Auction;
@@ -12,6 +14,10 @@ function AuctionCard({auction}: Props) {
         <Link href={`/listings/${auction.id}`} className="transition-transform duration-200 hover:-translate-y-1">
             <Card className='relative mx-auto w-full pt-0'>
                 <CardImage imageUrl={auction.imageUrl} />
+                <Badge className={'absolute top-2 right-2'} variant={'secondary'}>
+                    <UserIcon />
+                    {auction.seller}
+                </Badge>
                 <div className='absolute bottom-18 left-2'>
                     <CountdownTimer auctionEnd={auction.auctionEnd} />
                 </div>
