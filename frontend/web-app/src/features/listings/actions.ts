@@ -1,4 +1,10 @@
-﻿import {Auction, PagedResult} from "@/lib/types";
+﻿'use server'
+
+import {Auction, PagedResult} from "@/lib/types";
+import {FieldValues} from "react-hook-form";
+import {auth} from "@/lib/auth";
+import {headers} from "next/headers";
+import {fetchWrapper} from "@/lib/fetch-wrapper";
 
 export type ListingSearchParams = {
     pageNumber?: string | string[];
@@ -10,9 +16,7 @@ export type ListingSearchParams = {
     winner?: string;
 }
 
-const baseUrl = process.env.BASE_API_URL || 'http://localhost:6001';
-
-export async function getListings(params: ListingSearchParams = {}): Promise<PagedResult<Auction>> {
+export async function getListings(params: ListingSearchParams = {}) {
     const {pageNumber, pageSize, searchTerm, orderBy, filterBy, seller, winner} = params;
     const query = new URLSearchParams({
         pageNumber: pageNumber?.toString() || String(1),
@@ -23,19 +27,25 @@ export async function getListings(params: ListingSearchParams = {}): Promise<Pag
     query.set("orderBy", orderBy?.toString() || "endingSoon");
     query.set("filterBy", filterBy?.toString() || "live");
 
-    if(winner) query.set("winner", winner);
-    if(seller) query.set("seller", seller);
-    
-    const res = await fetch(`${baseUrl}/search?${query}`);
+    if (winner) query.set("winner", winner);
+    if (seller) query.set("seller", seller);
 
-    if (!res.ok) throw new Error('Failed to fetch data')
-
-    return res.json();
+    return fetchWrapper<PagedResult<Auction>>(`/search?${query}`);
 }
 
-export async function getListingsDetails(id: string): Promise<Auction> {
-    const res = await fetch(`${baseUrl}/auctions/${id}`);
+export async function getListingsDetails(id: string){
+    return fetchWrapper<Auction>(`/auctions/${id}`);
+}
 
-    if (!res.ok) throw new Error('Failed to fetch data')
-    return res.json();
+export async function createListings(values: FieldValues) {
+    return fetchWrapper<Auction>(`/auctions`,{
+        method: "POST",
+        body: JSON.stringify(values),
+    });
+}
+
+export async function deleteListing(id: string) {
+    return fetchWrapper<void>(`/auctions/${id}`,{
+        method: "Delete",
+    });
 }

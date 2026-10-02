@@ -1,7 +1,7 @@
 ﻿import {getCurrentUser} from "@/lib/auth";
 import {Card, CardContent, CardFooter, CardHeader} from "@/components/ui/card";
 import {Button} from "@/components/ui/button";
-import AuthTestButton from "@/app/session/AuthTestButton";
+import AuthTestButton from "@/features/session/AuthTestButton";
 
 async function SessionPage() {
     const user = await getCurrentUser();

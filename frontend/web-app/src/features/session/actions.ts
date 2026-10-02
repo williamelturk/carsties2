@@ -2,19 +2,22 @@
 
 import {auth} from "@/lib/auth";
 import {headers} from "next/headers";
+import {fetchWrapper} from "@/lib/fetch-wrapper";
+import {FieldValues} from "react-hook-form";
 
-export async function getAuthTest(){
+export async function getAuthTest() {
 
-    
-    const {accessToken} = await auth.api.getAccessToken({
-        body: {useAccountCookie: true},
-        headers: await headers(),
-    });
-    
-    const res = await fetch(`${process.env.BASE_API_URL}/auctions/test`, {
-        method: "POST",
-        headers: {Authorization: `Bearer ${accessToken}`},
-        body: JSON.stringify({}),
+    return await fetchWrapper<string>('/auctions/test', {
+        method: 'POST',
+        body: JSON.stringify({})
+
     })
-    return {status: res.status, body: await res.text()};
+}
+
+export async function updateListing(values: FieldValues) {
+
+    return await fetchWrapper<void>(`/auctions/${values.id}`, {
+        method: 'PUT',
+        body: JSON.stringify(values)
+    })
 }
