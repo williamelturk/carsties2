@@ -13,7 +13,8 @@ public class BidPlacedHandler
             ?? throw new InvalidOperationException($"Could not find auction {message.AuctionId}");
 
 
-        if (message.BidStatus.Contains("Accepted") && message.Amount > auction.CurrentHighBid)
+        if (auction.CurrentHighBid == null && message.BidStatus.Contains("Accepted") ||
+            message.BidStatus.Contains("Accepted") && message.Amount > auction.CurrentHighBid)
         {
             auction.CurrentHighBid = message.Amount;
         }

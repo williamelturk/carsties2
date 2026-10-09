@@ -1,5 +1,6 @@
 using AuctionService.Data;
 using AuctionService.Errors;
+using AuctionService.Services;
 using Contracts;
 using Mapster;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -15,6 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddGrpc();
 
 var connString = builder.Configuration.GetConnectionString("DefaultConnection");
 if (string.IsNullOrWhiteSpace(connString)) throw new Exception("Connection string is empty");
@@ -70,6 +72,7 @@ var app = builder.Build();
 app.UseExceptionHandler();
 
 app.MapControllers();
+app.MapGrpcService<AuctionGrpcServer>();
 
 try
 {

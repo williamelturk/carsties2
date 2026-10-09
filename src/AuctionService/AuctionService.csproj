@@ -8,6 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="Grpc.AspNetCore" Version="2.84.0" />
       <PackageReference Include="Mapster" Version="10.0.12" />
       <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.12" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.4">
@@ -26,9 +27,14 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="..\..\.dockerignore">
-        <Link>.dockerignore</Link>
-      </Content>
+        <Content Include="..\..\.dockerignore">
+            <Link>.dockerignore</Link>
+        </Content>
+    </ItemGroup>
+
+
+    <ItemGroup>
+        <ProtoBuf Include="Protos\auction.proto" GrpcServices="Server" />
     </ItemGroup>
 
 </Project>
