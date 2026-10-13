@@ -18,7 +18,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("CustomPolicy", policy =>
     {
-        policy.AllowAnyOrigin();
+        policy.AllowAnyHeader();
         policy.AllowAnyMethod();
         policy.AllowCredentials();
         policy.WithOrigins(builder.Configuration["ClientApp"]!);
