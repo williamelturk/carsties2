@@ -4,7 +4,8 @@ import LoginButton from "@/components/nav/loginButton";
 
 async function SignInPage(props: PageProps<"/auth/sign-in">) {
     const searchParams = await props.searchParams;
-    const callback = String(searchParams["callbackUrl"]) || "/";
+    const callbackParam = searchParams["callbackUrl"];
+    const callback = typeof callbackParam === "string" ? callbackParam : "/";
     return (
         <Card className={'h-100 w-1/2 mx-auto my-auto flex flex-col gap-3 justify-center items-center test-center'}>
             <Lock className={'h-28 w-28'}/>

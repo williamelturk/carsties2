@@ -19,7 +19,7 @@ function BidItem({ bid }: Props) {
                     <User className={'h-5 w-5'}/>
                     {bid.bidder}
                 </div>
-                <p className='text-sm text-muted-foreground'>{formatDateTime(bid.bidTime)}</p>
+                <p suppressHydrationWarning className='text-sm text-muted-foreground'>{formatDateTime(bid.bidTime)}</p>
                 
             </div>
             <div className='flex-flex-col justify-end gap-2'>

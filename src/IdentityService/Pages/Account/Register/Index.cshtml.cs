@@ -17,7 +17,7 @@ public class Index(UserManager<ApplicationUser> userManager, IConfiguration conf
     [BindProperty] public bool RegisterSuccess { get; set; } 
     
     public string ClientAppUrl => config["ClientAppUrl"]!;
-    public IActionResult OnGet(string returnUrl)
+    public IActionResult OnGet(string? returnUrl = null)
     {
         Input = new InputModel
         {
